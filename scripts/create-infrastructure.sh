@@ -10,11 +10,21 @@ SHUTDOWN_TYPE=stop
 USER_NAME=user8
 TAGS="ResourceType=instance,Tags=[{Key=installation_id,Value=${USER_NAME}-1},{Key=Name,Value=NAME}]"
 
+initial_command()
+{
+  cat <<EOF
+#!/bin/sh
+
+curl https://github.com/ZajtsevD/AWS/blob/master/scripts/install-qrencode.sh | bash -s
+EOF
+}
+
 start_vm()
 {
   local private_ip_address="$1"
   local public_ip="$2"
   local name="$3"
+  local user_data="$4"
 
   local tags=$(echo $TAGS | sed s/NAME/$name/)
 # local tags-${TAGS/NAME/$name}
@@ -28,9 +38,11 @@ start_vm()
     --private-ip-address "$private_ip_address" \
     --tag-specifications "$tags" \
     --${public_ip} \
+    --user-data $user_data
+
 #    [--block-device-mappings <value>]
 #    [--placement <value>]
-#    [--user-data <value>]
+
 }
 
 get_dns_name()
@@ -41,10 +53,10 @@ get_dns_name()
 
 start()
 {
-  start_vm 10.4.1.81 associate-public-ip-address ${USER_NAME}-vm1
-  for i in {2..3}; do
-    start_vm 10.4.1.$((80+i)) no-associate-public-ip-address ${USER_NAME}-vm$i
-  done
+  start_vm 10.4.1.81 associate-public-ip-address ${USER_NAME}-vm1 file://<( initial_command )
+#  for i in {2..3}; do
+#    start_vm 10.4.1.$((80+i)) no-associate-public-ip-address ${USER_NAME}-vm$i
+#  done
 }
 
 stop()
@@ -63,8 +75,6 @@ elif [ "$1" = stop ]; then
   stop
 else
   cat <<EOF
-Usage:
-
-  $0 start|stop
+usage: $0 start|stop
 EOF
 fi
