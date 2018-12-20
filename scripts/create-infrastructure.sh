@@ -41,7 +41,7 @@ get_dns_name()
 
 start()
 {
-#  start_vm 10.4.1.81 associate-public-ip-address ${USER_NAME}-vm1
+  start_vm 10.4.1.81 associate-public-ip-address ${USER_NAME}-vm1
   for i in {2..3}; do
     start_vm 10.4.1.$((80+i)) no-associate-public-ip-address ${USER_NAME}-vm$i
   done
