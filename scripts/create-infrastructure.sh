@@ -14,8 +14,7 @@ initial_command()
 {
   cat <<EOF
 #!/bin/sh
-
-curl https://github.com/ZajtsevD/AWS/blob/master/scripts/install-qrencode.sh | bash -s
+curl https://raw.githubusercontent.com/ZajtsevD/AWS/master/scripts/install-qrencode.sh | bash -s
 EOF
 }
 
